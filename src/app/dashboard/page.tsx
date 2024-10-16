@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
+  const [SelectedId, setSelectedId] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,7 +95,10 @@ const Dashboard = () => {
                   ) : (
                     <ul>
                       {filteredData().map(([key, value]) => (
-                        <li key={key} onClick={() => handleSelect(activeTab === 'patients' ? value + ` (${key})` : value)} className="py-2 px-4 hover:bg-gray-100 cursor-pointer">
+                        <li key={key} onClick={() => {
+                          handleSelect(activeTab === 'patients' ? value + ` (${key})` : value)
+                          setSelectedId(key)
+                          }} className="py-2 px-4 hover:bg-gray-100 cursor-pointer">
                           {value} {activeTab === 'patients' && `(${key})`}
                         </li>
                       ))}
@@ -109,10 +113,10 @@ const Dashboard = () => {
 
       <div className="mt-4">
         {activeTab === 'patients' && (
-          <PatientTab selectedItem={selectedItem} />
+          <PatientTab selectedItem={SelectedId} />
         )}
         {activeTab === 'guidelines' && (
-          <GuidelineTab selectedItem={selectedItem} />
+          <GuidelineTab selectedItem={SelectedId} />
         )}
       </div>
  </div>
@@ -120,3 +124,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
