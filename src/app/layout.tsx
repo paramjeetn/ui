@@ -28,7 +28,14 @@ export default function RootLayout({
   }, [router, pathname])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <html lang="en">
+      <body>
+        <Navbar />
+        <p>Loading....</p>
+      </body>
+    </html>
+    )
   }
 
   return (
