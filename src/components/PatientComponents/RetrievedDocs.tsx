@@ -22,9 +22,11 @@ interface RetrievedDocsProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
+
 }
 
-const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onUpdate }) => {
+const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onUpdate, onReset }) => {
   const [selectedDoc, setSelectedDoc] = useState<RetrievedDoc | null>(null);
 
   const parsedDocs: RetrievedDoc[] = JSON.parse(docs);
@@ -52,6 +54,8 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
           lgtm={lgtm}
           onThumbsUp={handleThumbsUp}
           onThumbsDown={handleThumbsDown}
+          onReset={onReset}
+
         />
       </CardHeader>
       <CardContent>

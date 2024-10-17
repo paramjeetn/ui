@@ -8,9 +8,11 @@ interface FinalRecommendationProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
+
 }
 
-const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendation, verified, lgtm, onUpdate }) => {
+const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendation, verified, lgtm, onUpdate, onReset }) => {
   
   const handleThumbsUp = () => {
     onUpdate(true, true);
@@ -28,6 +30,7 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
           lgtm={lgtm}
           onThumbsUp={handleThumbsUp}
           onThumbsDown={handleThumbsDown}
+          onReset={onReset}
         />
       </CardHeader>
       <CardContent>

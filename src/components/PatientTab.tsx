@@ -161,8 +161,24 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
           [`${field}_lgtm`]: newLgtm,
         },
       };
-      setPatientData(updatedData); // Update local state immediately
-      debouncedSavePatientData(updatedData); // Trigger debounced save to backend
+      setPatientData(updatedData);
+      debouncedSavePatientData(updatedData);
+    }
+  };
+
+
+  const handleReset = (field: string) => () => {
+    if (patientData) {
+      const updatedData = {
+        ...patientData,
+        patient_data: {
+          ...patientData.patient_data,
+          [`${field}_verified`]: false,
+          [`${field}_lgtm`]: false,
+        },
+      };
+      setPatientData(updatedData);
+      debouncedSavePatientData(updatedData);
     }
   };
 
@@ -186,6 +202,7 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
               verified={patientData.patient_data.patient_text_verified}
               lgtm={patientData.patient_data.patient_text_lgtm}
               onUpdate={handleUpdate('patient_text')}
+              onReset={handleReset('patient_text')}
             />
           </section>
           <section className="space-y-4">
@@ -195,18 +212,21 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
               verified={patientData.patient_data.medical_condition_verified}
               lgtm={patientData.patient_data.medical_condition_lgtm}
               onUpdate={handleUpdate('medical_condition')}
+              onReset={handleReset('medical_condition')}
             />
             <FinalRecommendation
               recommendation={patientData.patient_data.final_recommendation}
               verified={patientData.patient_data.final_recommendation_verified}
               lgtm={patientData.patient_data.final_recommendation_lgtm}
               onUpdate={handleUpdate('final_recommendation')}
+              onReset={handleReset('final_recommendation')}
             />
             <RetrievedDocs
               docs={patientData.patient_data.retrieved_docs}
               verified={patientData.patient_data.retrieved_docs_verified}
               lgtm={patientData.patient_data.retrieved_docs_lgtm}
               onUpdate={handleUpdate('retrieved_docs')}
+              onReset={handleReset('retrieved_docs')}
             />
           </section>
         </div>

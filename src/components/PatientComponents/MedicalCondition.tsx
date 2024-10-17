@@ -8,9 +8,11 @@ interface MedicalConditionProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
+
 }
 
-const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate }) => {
+const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate,onReset }) => {
   
   const handleThumbsUp = () => {
     onUpdate(true, true);
@@ -28,6 +30,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
           lgtm={lgtm}
           onThumbsUp={handleThumbsUp}
           onThumbsDown={handleThumbsDown}
+          onReset={onReset}
         />
       </CardHeader>
       <CardContent>

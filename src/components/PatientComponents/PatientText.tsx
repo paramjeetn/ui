@@ -8,9 +8,10 @@ interface PatientTextProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
 }
 
-const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdate }) => {
+const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdate, onReset }) => {
   
   useEffect(() => {
     console.log('PatientText Component:');
@@ -25,6 +26,7 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
   const handleThumbsDown = () => {
     onUpdate(true, false);
   };
+
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -34,6 +36,7 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
           lgtm={lgtm}
           onThumbsUp={handleThumbsUp}
           onThumbsDown={handleThumbsDown}
+          onReset={onReset}
         />
       </CardHeader>
       <CardContent>
