@@ -64,3 +64,4 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
 };
 
 export default PatientTab;
+

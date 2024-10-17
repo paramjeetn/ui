@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import PatientTab from '@/components/PatientTab';
 import GuidelineTab from '@/components/GuidelineTab';
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Data {
   patient: { [key: string]: string };
@@ -16,11 +16,11 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('patients');
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState<Data>({ patient: {}, guideline: {} });
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [selectedGuidelineId, setSelectedGuidelineId] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [SelectedId, setSelectedId] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,19 +39,28 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  // Filter data based on the active tab and search query
   const filteredData = () => {
     const entries = activeTab === 'patients' ? data.patient : data.guideline;
-    return Object.entries(entries).filter(([key, value]) => 
+    return Object.entries(entries).filter(([key, value]) =>
       value.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
-  const handleSelect = (item: string) => {
-    setSelectedItem(item);
+  // Handle selecting an item from the search results
+  const handleSelect = (item: string, key: string) => {
     setSearchQuery(''); // Clear the search query
     setShowResults(false);
+
+    // Set the appropriate ID based on the active tab
+    if (activeTab === 'patients') {
+      setSelectedPatientId(key);
+    } else {
+      setSelectedGuidelineId(key);
+    }
   };
 
+  // Handle click outside the search results to close the dropdown
   const handleClickOutside = (event: MouseEvent) => {
     if (!searchRef.current?.contains(event.target as Node)) {
       setShowResults(false);
@@ -64,6 +73,26 @@ const Dashboard = () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+
+  // Handle tab change to reset the selected ID accordingly
+  useEffect(() => {
+    const entries = activeTab === 'patients' ? Object.entries(data.patient) : Object.entries(data.guideline);
+
+    if (entries.length > 0) {
+      if (activeTab === 'patients') {
+        setSelectedPatientId(entries[0][0]); // Set first patient ID
+      } else {
+        setSelectedGuidelineId(entries[0][0]); // Set first guideline ID
+      }
+    } else {
+      // Reset selected IDs if no data is present
+      if (activeTab === 'patients') {
+        setSelectedPatientId(null);
+      } else {
+        setSelectedGuidelineId(null);
+      }
+    }
+  }, [activeTab, data]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -95,10 +124,7 @@ const Dashboard = () => {
                   ) : (
                     <ul>
                       {filteredData().map(([key, value]) => (
-                        <li key={key} onClick={() => {
-                          handleSelect(activeTab === 'patients' ? value + ` (${key})` : value)
-                          setSelectedId(key)
-                          }} className="py-2 px-4 hover:bg-gray-100 cursor-pointer">
+                        <li key={key} onClick={() => handleSelect(value, key)} className="py-2 px-4 hover:bg-gray-100 cursor-pointer">
                           {value} {activeTab === 'patients' && `(${key})`}
                         </li>
                       ))}
@@ -113,16 +139,14 @@ const Dashboard = () => {
 
       <div className="mt-4">
         {activeTab === 'patients' && (
-          <PatientTab selectedItem={SelectedId} />
+          <PatientTab selectedItem={selectedPatientId} />
         )}
         {activeTab === 'guidelines' && (
-          <GuidelineTab selectedItem={SelectedId} />
+          <GuidelineTab selectedItem={selectedGuidelineId} />
         )}
       </div>
- </div>
+    </div>
   );
 };
 
 export default Dashboard;
-
-

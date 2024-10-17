@@ -8,7 +8,7 @@ export async function GET(request: Request, context:any) {
     // Add any headers if needed
   });
   const data = await response.json();
-  console.log(data)
+  // console.log(data)
   return NextResponse.json(data);
 }
 
