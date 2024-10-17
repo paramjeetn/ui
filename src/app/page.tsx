@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import LoginModal from '@/components/LoginModal'
-import RegisterModal from '@/components/RegisterModal'
+import LoginModal from '@/components/AuthModals/LoginModal'
+import RegisterModal from '@/components/AuthModals/RegisterModal'
 
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(true)
