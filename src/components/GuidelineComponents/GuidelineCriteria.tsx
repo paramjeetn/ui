@@ -7,9 +7,11 @@ interface GuidelineCriteriaProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
+
 }
 
-const GuidelineCriteria: React.FC<GuidelineCriteriaProps> = ({ criteria, verified, lgtm, onUpdate }) => {
+const GuidelineCriteria: React.FC<GuidelineCriteriaProps> = ({ criteria, verified, lgtm, onUpdate, onReset }) => {
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -18,6 +20,7 @@ const GuidelineCriteria: React.FC<GuidelineCriteriaProps> = ({ criteria, verifie
           verified={verified}
           lgtm={lgtm}
           onUpdate={onUpdate}
+          onReset={onReset}
         />
       </CardHeader>
       <CardContent>

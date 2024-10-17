@@ -7,9 +7,11 @@ interface GuidelineTextProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
+
 }
 
-const GuidelineText: React.FC<GuidelineTextProps> = ({ text, verified, lgtm, onUpdate }) => {
+const GuidelineText: React.FC<GuidelineTextProps> = ({ text, verified, lgtm, onUpdate, onReset }) => {
   console.log("Rendering GuidelineText. Props:", { text, verified, lgtm });
 
   return (
@@ -20,6 +22,7 @@ const GuidelineText: React.FC<GuidelineTextProps> = ({ text, verified, lgtm, onU
           verified={verified}
           lgtm={lgtm}
           onUpdate={onUpdate}
+          onReset={onReset}
         />
       </CardHeader>
       <CardContent>

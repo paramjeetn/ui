@@ -7,9 +7,11 @@ interface MedicalConditionProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
+
 }
 
-const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate }) => {
+const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate, onReset }) => {
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -18,6 +20,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
           verified={verified}
           lgtm={lgtm}
           onUpdate={onUpdate}
+          onReset={onReset}
         />
       </CardHeader>
       <CardContent>

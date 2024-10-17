@@ -1,5 +1,5 @@
 import React from 'react';
-import { HelpCircle, ThumbsUp, ThumbsDown } from "lucide-react";
+import { HelpCircle, ThumbsUp, ThumbsDown, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -7,9 +7,10 @@ interface StatusIndicatorProps {
   verified: boolean;
   lgtm: boolean;
   onUpdate: (newVerified: boolean, newLgtm: boolean) => void;
+  onReset: () => void;
 }
 
-const StatusIndicator: React.FC<StatusIndicatorProps> = ({ verified, lgtm, onUpdate }) => {
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ verified, lgtm, onUpdate, onReset }) => {
   return (
     <div className="flex items-center space-x-2">
       <TooltipProvider>
@@ -43,6 +44,25 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ verified, lgtm, onUpd
         >
           <ThumbsDown size={16} className="text-red-500" />
         </Button>
+      )}
+      {verified && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onReset}
+                className="p-0"
+              >
+                <XCircle size={16} className="text-red-500" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Reset verification
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );

@@ -7,7 +7,7 @@ export async function POST(request: Request, context: any) {
   try {
     // Parse the incoming request body
     const requestBody = await request.json();
-
+    console.log(requestBody)
     // Construct the URL with the patient ID
     const url = `https://paramjeetpradhan00-copilot.cloud.dbos.dev/api/v1/push_patient_data/${patientId}`;
 

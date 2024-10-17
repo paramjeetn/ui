@@ -76,7 +76,7 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
     if (notification) {
       const timer = setTimeout(() => {
         setNotification(null);
-      }, 3000); // Hide notification after 3 seconds
+      }, 1000); // Hide notification after 3 seconds
 
       return () => clearTimeout(timer);
     }
@@ -91,15 +91,15 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
         }
       );
       const stringData = await response.text(); 
-      console.log(stringData)// Get the response as text
+      // console.log(stringData)// Get the response as text
     const data: PatientData = JSON.parse(stringData); // Parse the stringified JSON
       setPatientData(data);
       // Log the verification and lgtm status for each field
-      console.log('Patient Data Received:');
-      console.log('Patient Text - verified:', data.patient_data.patient_text_verified, 'lgtm:', data.patient_data.patient_text_lgtm);
-      console.log('Medical Condition - verified:', data.patient_data.medical_condition_verified, 'lgtm:', data.patient_data.medical_condition_lgtm);
-      console.log('Final Recommendation - verified:', data.patient_data.final_recommendation_verified, 'lgtm:', data.patient_data.final_recommendation_lgtm);
-      console.log('Retrieved Docs - verified:', data.patient_data.retrieved_docs_verified, 'lgtm:', data.patient_data.retrieved_docs_lgtm);
+      // console.log('Patient Data Received:');
+      // console.log('Patient Text - verified:', data.patient_data.patient_text_verified, 'lgtm:', data.patient_data.patient_text_lgtm);
+      // console.log('Medical Condition - verified:', data.patient_data.medical_condition_verified, 'lgtm:', data.patient_data.medical_condition_lgtm);
+      // console.log('Final Recommendation - verified:', data.patient_data.final_recommendation_verified, 'lgtm:', data.patient_data.final_recommendation_lgtm);
+      // console.log('Retrieved Docs - verified:', data.patient_data.retrieved_docs_verified, 'lgtm:', data.patient_data.retrieved_docs_lgtm);
     } catch (error) {
       console.error('Error fetching patient data:', error);
       setNotification({ type: 'error', message: 'Failed to fetch patient data. Please try again.' });
@@ -186,9 +186,9 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
     <div className="p-4 relative">
       {notification && (
         <div 
-          className={`absolute top-4 right-4 p-4 rounded-md shadow-md ${
+          className={`fixed bottom-4 right-4 p-2 rounded-md shadow-md ${
             notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white`}
+          } text-white z-50`}
         >
           {notification.message}
         </div>
