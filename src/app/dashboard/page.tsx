@@ -117,8 +117,8 @@ const Dashboard = () => {
             />
 
             {showResults && (
-              <div className="absolute top-12 left-0 w-full bg-white shadow-md">
-                <ScrollArea className="cursor-pointer h-80"> 
+              <div className="absolute top-12 left-0 w-full bg-white z-50 shadow-md">
+                <ScrollArea className="cursor-pointer h-64"> 
                   {loading ? (
                     <p>Loading...</p>
                   ) : (
