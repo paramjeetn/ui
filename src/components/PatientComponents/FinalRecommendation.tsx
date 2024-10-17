@@ -11,6 +11,14 @@ interface FinalRecommendationProps {
 }
 
 const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendation, verified, lgtm, onUpdate }) => {
+  
+  const handleThumbsUp = () => {
+    onUpdate(true, true);
+  };
+
+  const handleThumbsDown = () => {
+    onUpdate(true, false);
+  };
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -18,12 +26,12 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
         <StatusIndicator
           verified={verified}
           lgtm={lgtm}
-          onThumbsUp={() => onUpdate(true, true)}
-          onThumbsDown={() => onUpdate(true, false)}
+          onThumbsUp={handleThumbsUp}
+          onThumbsDown={handleThumbsDown}
         />
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-40 pr-4">
+        <ScrollArea className="h-72 pr-4">
           <p className="text-sm">{recommendation}</p>
         </ScrollArea>
       </CardContent>

@@ -18,13 +18,36 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ verified, lgtm, onThu
           <HelpCircle size={16} className="text-gray-500" />
         </TooltipTrigger>
         <TooltipContent>
-          {verified
-            ? (lgtm ? "Looks Good" : "Doesn't Look Good")
-            : "Unverified"}
+          {!verified 
+            ? "Unverified"
+            : lgtm 
+              ? "Looks Good" 
+              : "Doesn't Look Good"
+          }
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-    {(!verified || (verified && !lgtm)) && (
+    {!verified && (
+      <>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onThumbsUp}
+          className="p-0"
+        >
+          <ThumbsUp size={16} className="text-green-500" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onThumbsDown}
+          className="p-0"
+        >
+          <ThumbsDown size={16} className="text-red-500" />
+        </Button>
+      </>
+    )}
+    {verified && !lgtm && (
       <Button
         variant="ghost"
         size="sm"
@@ -34,7 +57,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ verified, lgtm, onThu
         <ThumbsUp size={16} className="text-green-500" />
       </Button>
     )}
-    {(!verified || (verified && lgtm)) && (
+    {verified && lgtm && (
       <Button
         variant="ghost"
         size="sm"

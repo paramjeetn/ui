@@ -1,8 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { auth } from '@/firebase';
 import PatientText from '@/components/PatientComponents/PatientText';
 import MedicalCondition from '@/components/PatientComponents/MedicalCondition';
 import FinalRecommendation from '@/components/PatientComponents/FinalRecommendation';
 import RetrievedDocs from '@/components/PatientComponents/RetrievedDocs';
+
+
+const useDebounce = (callback: Function, delay: number) => {
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+  const debouncedCallback = useCallback((...args: any[]) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const newTimer = setTimeout(() => {
+      callback(...args);
+    }, delay);
+    setTimer(newTimer);
+  }, [callback, delay, timer]);
+
+  useEffect(() => {
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [timer]);
+
+  return debouncedCallback;
+};
 
 interface PatientData {
   patient_key: number;
@@ -30,41 +56,127 @@ interface PatientTabProps {
   selectedItem: string | null;
 }
 
+interface Notification {
+  type: 'success' | 'error';
+  message: string;
+}
+
 const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
   const [patientData, setPatientData] = useState<PatientData | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [notification, setNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
     if (selectedItem) {
-      const fetchPatientData = async () => {
-        try {
-          const response = await fetch(`/api/get_patient/${selectedItem}`);
-          const data: PatientData = await response.json();
-          setPatientData(data);
-        } catch (error) {
-          console.error('Error fetching patient data:', error);
-        }
-      };
-      fetchPatientData();
+      fetchPatientData(selectedItem);
     }
   }, [selectedItem]);
 
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 3000); // Hide notification after 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const fetchPatientData = async (patientId: string) => {
+    try {
+      const response = await fetch(`/api/get_patient/${patientId}`,
+        {
+          method: 'GET',
+          cache: "no-cache"
+        }
+      );
+      const stringData = await response.text(); 
+      console.log(stringData)// Get the response as text
+    const data: PatientData = JSON.parse(stringData); // Parse the stringified JSON
+      setPatientData(data);
+      // Log the verification and lgtm status for each field
+      console.log('Patient Data Received:');
+      console.log('Patient Text - verified:', data.patient_data.patient_text_verified, 'lgtm:', data.patient_data.patient_text_lgtm);
+      console.log('Medical Condition - verified:', data.patient_data.medical_condition_verified, 'lgtm:', data.patient_data.medical_condition_lgtm);
+      console.log('Final Recommendation - verified:', data.patient_data.final_recommendation_verified, 'lgtm:', data.patient_data.final_recommendation_lgtm);
+      console.log('Retrieved Docs - verified:', data.patient_data.retrieved_docs_verified, 'lgtm:', data.patient_data.retrieved_docs_lgtm);
+    } catch (error) {
+      console.error('Error fetching patient data:', error);
+      setNotification({ type: 'error', message: 'Failed to fetch patient data. Please try again.' });
+    }
+  };
+
+  const savePatientData = async (updatedData: PatientData) => {
+    setIsSaving(true);
+
+    try {
+      const currentUser = auth.currentUser;
+      const userEmail = currentUser ? currentUser.email : 'unknown';
+
+      const response = await fetch(`/api/push_patient_data/${updatedData.patient_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          patient_name: updatedData.patient_name,
+          patient_text: updatedData.patient_data.patient_text,
+          medical_condition: updatedData.patient_data.medical_condition,
+          final_recommendation: updatedData.patient_data.final_recommendation,
+          retrieved_docs: updatedData.patient_data.retrieved_docs,
+          patient_text_verified: Number(updatedData.patient_data.patient_text_verified),
+          medical_condition_verified: Number(updatedData.patient_data.medical_condition_verified),
+          final_recommendation_verified: Number(updatedData.patient_data.final_recommendation_verified),
+          retrieved_docs_verified: Number(updatedData.patient_data.retrieved_docs_verified),
+          patient_text_lgtm: Number(updatedData.patient_data.patient_text_lgtm),
+          medical_condition_lgtm: Number(updatedData.patient_data.medical_condition_lgtm),
+          final_recommendation_lgtm: Number(updatedData.patient_data.final_recommendation_lgtm),
+          retrieved_docs_lgtm: Number(updatedData.patient_data.retrieved_docs_lgtm),
+          updated_by: userEmail,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save patient data');
+      }
+
+      setNotification({ type: 'success', message: 'Changes saved successfully' });
+    } catch (error) {
+      console.error('Error saving patient data:', error);
+      setNotification({ type: 'error', message: 'Failed to save changes. Please try again.' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const debouncedSavePatientData = useDebounce(savePatientData, 1000);
+
   const handleUpdate = (field: string) => (newVerified: boolean, newLgtm: boolean) => {
     if (patientData) {
-      setPatientData({
+      const updatedData = {
         ...patientData,
         patient_data: {
           ...patientData.patient_data,
           [`${field}_verified`]: newVerified,
           [`${field}_lgtm`]: newLgtm,
         },
-      });
-      // Here you would typically send an API request to update the backend
-      console.log(`Updating ${field}:`, { verified: newVerified, lgtm: newLgtm });
+      };
+      setPatientData(updatedData); // Update local state immediately
+      debouncedSavePatientData(updatedData); // Trigger debounced save to backend
     }
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 relative">
+      {notification && (
+        <div 
+          className={`absolute top-4 right-4 p-4 rounded-md shadow-md ${
+            notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white`}
+        >
+          {notification.message}
+        </div>
+      )}
       {patientData && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <section className="space-y-4">
@@ -76,7 +188,6 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
               onUpdate={handleUpdate('patient_text')}
             />
           </section>
-
           <section className="space-y-4">
             <h2 className="text-xl font-bold">Medical Information</h2>
             <MedicalCondition
@@ -100,6 +211,7 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
           </section>
         </div>
       )}
+      {isSaving && <p className="text-blue-500">Saving changes...</p>}
     </div>
   );
 };

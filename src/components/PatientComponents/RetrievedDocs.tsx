@@ -34,6 +34,15 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
     return parts[parts.length - 2]; // Get the second to last part of the path
   };
 
+  
+  const handleThumbsUp = () => {
+    onUpdate(true, true);
+  };
+
+  const handleThumbsDown = () => {
+    onUpdate(true, false);
+  };
+
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -41,8 +50,8 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
         <StatusIndicator
           verified={verified}
           lgtm={lgtm}
-          onThumbsUp={() => onUpdate(true, true)}
-          onThumbsDown={() => onUpdate(true, false)}
+          onThumbsUp={handleThumbsUp}
+          onThumbsDown={handleThumbsDown}
         />
       </CardHeader>
       <CardContent>
@@ -60,15 +69,15 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
                     <span className="text-sm text-gray-500">Score: {doc.score.toFixed(2)}</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="">
                   <DialogHeader>
                     <DialogTitle>{extractLabel(doc.item.id)}</DialogTitle>
                   </DialogHeader>
-                  <ScrollArea className="mt-2 h-[200px] w-full rounded-md border p-4">
+                  <ScrollArea className="h-[250px] w-full rounded-md border p-4">
                     <p>{doc.item.meta.guideline || "No guideline available"}</p>
                   </ScrollArea>
-                  <div className="mt-2 text-sm text-gray-500">
-                    Score: {doc.score.toFixed(4)}
+                  <div className="text-sm text-gray-500">
+                    Score: {doc.score.toFixed(6)}
                   </div>
                 </DialogContent>
               </Dialog>

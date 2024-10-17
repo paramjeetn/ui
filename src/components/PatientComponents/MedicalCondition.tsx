@@ -11,6 +11,14 @@ interface MedicalConditionProps {
 }
 
 const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate }) => {
+  
+  const handleThumbsUp = () => {
+    onUpdate(true, true);
+  };
+
+  const handleThumbsDown = () => {
+    onUpdate(true, false);
+  };
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -18,12 +26,12 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
         <StatusIndicator
           verified={verified}
           lgtm={lgtm}
-          onThumbsUp={() => onUpdate(true, true)}
-          onThumbsDown={() => onUpdate(true, false)}
+          onThumbsUp={handleThumbsUp}
+          onThumbsDown={handleThumbsDown}
         />
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-40 pr-4">
+        <ScrollArea className="max-h-40 pr-4">
           <p className="text-sm">{condition}</p>
         </ScrollArea>
       </CardContent>

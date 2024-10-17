@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import StatusIndicator from '@/components/PatientComponents/StatusIndicator';// You'll need to create this component
+import StatusIndicator from '@/components/PatientComponents/StatusIndicator'; 
 
 interface PatientTextProps {
   text: string;
@@ -11,6 +11,20 @@ interface PatientTextProps {
 }
 
 const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdate }) => {
+  
+  useEffect(() => {
+    console.log('PatientText Component:');
+    console.log('verified:', verified);
+    console.log('lgtm:', lgtm);
+  }, [verified, lgtm]);
+
+  const handleThumbsUp = () => {
+    onUpdate(true, true);
+  };
+
+  const handleThumbsDown = () => {
+    onUpdate(true, false);
+  };
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between py-2">
@@ -18,8 +32,8 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         <StatusIndicator
           verified={verified}
           lgtm={lgtm}
-          onThumbsUp={() => onUpdate(true, true)}
-          onThumbsDown={() => onUpdate(true, false)}
+          onThumbsUp={handleThumbsUp}
+          onThumbsDown={handleThumbsDown}
         />
       </CardHeader>
       <CardContent>
