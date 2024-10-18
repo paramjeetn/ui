@@ -41,11 +41,13 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
     onUpdate(true, false);
   };
 
+  const conditionsList = condition.replace(/^Medical Conditions:\s*/, '').split(',')
+
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row items-center justify-between py-2">
-        <CardTitle className="text-md font-semibold">Medical Condition</CardTitle>
-        <div className="flex items-center space-x-2">
+      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+  <CardTitle className="text-xl font-semibold">Medical Condition</CardTitle>
+  <div className="flex items-center space-x-2 flex-grow mr-2 ml-2"> {/* Added flex-grow here */}
           <StatusIndicator
             verified={verified}
             lgtm={lgtm}
@@ -79,7 +81,19 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
               </div>
             </>
           ) : (
-            <p className="text-sm">{condition}</p>
+            <div className="flex flex-wrap gap-2">
+              {conditionsList.map((condition, index) => (
+                condition && condition.trim() !== '' && !condition.includes('\n') ? (
+                  <Button
+                    key={index}
+                    variant="secondary"
+                    className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
+                  >
+                    {condition.trim()}
+                  </Button>
+                ) : null
+              ))}
+            </div>
           )}
         </ScrollArea>
       </CardContent>

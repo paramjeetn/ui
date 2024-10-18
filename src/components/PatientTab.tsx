@@ -5,6 +5,7 @@ import MedicalCondition from '@/components/PatientComponents/MedicalCondition';
 import FinalRecommendation from '@/components/PatientComponents/FinalRecommendation';
 import RetrievedDocs from '@/components/PatientComponents/RetrievedDocs';
 import {PatientData, PatientTabProps,Notification} from '@/components/types'
+import { type } from 'os';
 
 
 const useDebounce = (callback: Function, delay: number) => {
@@ -36,6 +37,8 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
+
+  
 
   useEffect(() => {
     if (selectedItem) {
@@ -120,7 +123,7 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
     }
   };
 
-  const debouncedSavePatientData = useDebounce(savePatientData, 1000);
+  const debouncedSavePatientData = useDebounce(savePatientData, 1);
 
   const handleUpdate = (field: string) => (newVerified: boolean, newLgtm: boolean) => {
     if (patientData) {
@@ -154,6 +157,9 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
   };
 
   const handleTextChange = (field: string) => (newText: string) => {
+    console.log(typeof field)
+    console.log(field)
+    console.log(newText)
     if (patientData) {
       const updatedData = {
         ...patientData,
