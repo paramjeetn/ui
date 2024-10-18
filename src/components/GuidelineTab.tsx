@@ -101,7 +101,8 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
     }
   };
 
- const saveGuidelineData = async (updatedData: GuidelineData) => {
+  const saveGuidelineData = async (updatedData: GuidelineData) => {
+    setIsSaving(true);
     try {
       const currentUser = auth.currentUser;
       const userEmail = currentUser ? currentUser.email : 'unknown';
@@ -135,10 +136,13 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
     } catch (error) {
       console.error('Error saving guideline data:', error);
       setNotification({ type: 'error', message: 'Failed to save changes. Please try again.' });
+    } finally {
+      setIsSaving(false);
     }
   };
-      
-  const debouncedSaveGuidelineData = useDebounce(saveGuidelineData, 1);
+
+
+  const debouncedSaveGuidelineData = useDebounce(saveGuidelineData, 1000);
 
   const handleUpdate = (field: string) => (newVerified: boolean, newLgtm: boolean) => {
     if (guidelineData) {
@@ -171,6 +175,20 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
   };
 
 
+  const handleTextChange = (field: string) => (newText: string) => {
+    if (guidelineData) {
+      const updatedData = {
+        ...guidelineData,
+        guideline_data: {
+          ...guidelineData.guideline_data,
+          [field]: newText,
+        },
+      };
+      setGuidelineData(updatedData);
+      saveGuidelineData(updatedData); // Use immediate save for text changes
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!guidelineData) return <div>No guideline data available.</div>;
@@ -195,6 +213,8 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
             lgtm={guidelineData.guideline_data.guideline_text_lgtm}
             onUpdate={handleUpdate('guideline_text')}
             onReset={handleReset('guideline_text')}
+            onTextChange={handleTextChange('guideline_text')}
+
           />
         </section>
         <section className="space-y-4">
@@ -204,6 +224,8 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
             lgtm={guidelineData.guideline_data.guideline_medical_condition_lgtm}
             onUpdate={handleUpdate('guideline_medical_condition')}
             onReset={handleReset('guideline_medical_condition')}
+            onTextChange={handleTextChange('guideline_medical_condition')}
+
           />
           <GuidelineCriteria
             criteria={guidelineData.guideline_data.guideline_criteria}
@@ -211,6 +233,8 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
             lgtm={guidelineData.guideline_data.guideline_criteria_lgtm}
             onUpdate={handleUpdate('guideline_criteria')}
             onReset={handleReset('guideline_criteria')}
+            onTextChange={handleTextChange('guideline_criteria')}
+
           />
           <GuidelinePDF pdfUrl={guidelineData.guideline_data.guideline_pdf} />
         </section>
