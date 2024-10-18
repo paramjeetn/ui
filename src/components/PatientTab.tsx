@@ -182,6 +182,19 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
     }
   };
 
+  const handleTextChange = (field: string) => (newText: string) => {
+    if (patientData) {
+      const updatedData = {
+        ...patientData,
+        patient_data: {
+          ...patientData.patient_data,
+          [field]: newText,
+        },
+      };
+      setPatientData(updatedData);
+      savePatientData(updatedData);
+    }
+  };
   return (
     <div className="p-4 relative">
       {notification && (
@@ -203,6 +216,8 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
               lgtm={patientData.patient_data.patient_text_lgtm}
               onUpdate={handleUpdate('patient_text')}
               onReset={handleReset('patient_text')}
+              onTextChange={handleTextChange('patient_text')}
+
             />
           </section>
           <section className="space-y-4">
@@ -213,6 +228,8 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
               lgtm={patientData.patient_data.medical_condition_lgtm}
               onUpdate={handleUpdate('medical_condition')}
               onReset={handleReset('medical_condition')}
+              onTextChange={handleTextChange('medical_condition')}
+
             />
             <FinalRecommendation
               recommendation={patientData.patient_data.final_recommendation}
@@ -220,6 +237,8 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
               lgtm={patientData.patient_data.final_recommendation_lgtm}
               onUpdate={handleUpdate('final_recommendation')}
               onReset={handleReset('final_recommendation')}
+              onTextChange={handleTextChange('final_recommendation')}
+
             />
             <RetrievedDocs
               docs={patientData.patient_data.retrieved_docs}
