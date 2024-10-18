@@ -4,6 +4,7 @@ import GuidelineText from '@/components/GuidelineComponents/GuidelineText';
 import MedicalCondition from '@/components/GuidelineComponents/MedicalCondition';
 import GuidelineCriteria from '@/components/GuidelineComponents/GuidelineCriteria';
 import GuidelinePDF from '@/components/GuidelineComponents/GuidelinePDF';
+import {GuidelineData, GuidelineTabProps, Notification} from '@/components/types'
 
 // Import or define the useDebounce hook here
 const useDebounce = (callback: Function, delay: number) => {
@@ -29,35 +30,6 @@ const useDebounce = (callback: Function, delay: number) => {
 
   return debouncedCallback;
 };
-
-interface GuidelineData {
-  guideline_key: number;
-  guideline_id: string;
-  guideline_name: string;
-  guideline_data: {
-    guideline_text: string;
-    guideline_medical_condition: string;
-    guideline_criteria: string;
-    guideline_pdf: string;
-    guideline_text_verified: boolean;
-    guideline_medical_condition_verified: boolean;
-    guideline_criteria_verified: boolean;
-    guideline_text_lgtm: boolean;
-    guideline_medical_condition_lgtm: boolean;
-    guideline_criteria_lgtm: boolean;
-  };
-  updated_by: string | null;
-  timestamp: string;
-}
-
-interface GuidelineTabProps {
-  selectedItem: string | null;
-}
-
-interface Notification {
-  type: 'success' | 'error';
-  message: string;
-}
 
 const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
   const [guidelineData, setGuidelineData] = useState<GuidelineData | null>(null);

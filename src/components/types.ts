@@ -20,6 +20,10 @@ export interface PatientData {
     updated_by: string | null;
     timestamp: string;
   }
+
+  export interface PatientTabProps {
+    selectedItem: string | null;
+  }
   
   export interface GuidelineData {
     guideline_key: number;
@@ -39,4 +43,13 @@ export interface PatientData {
     };
     updated_by: string | null;
     timestamp: string;
+  }
+
+  export interface GuidelineTabProps {
+    selectedItem: string | null;
+  }
+
+  export interface Notification {
+    type: 'success' | 'error';
+    message: string;
   }

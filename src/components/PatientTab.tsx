@@ -4,6 +4,7 @@ import PatientText from '@/components/PatientComponents/PatientText';
 import MedicalCondition from '@/components/PatientComponents/MedicalCondition';
 import FinalRecommendation from '@/components/PatientComponents/FinalRecommendation';
 import RetrievedDocs from '@/components/PatientComponents/RetrievedDocs';
+import {PatientData, PatientTabProps,Notification} from '@/components/types'
 
 
 const useDebounce = (callback: Function, delay: number) => {
@@ -30,36 +31,6 @@ const useDebounce = (callback: Function, delay: number) => {
   return debouncedCallback;
 };
 
-interface PatientData {
-  patient_key: number;
-  patient_id: string;
-  patient_name: string;
-  patient_data: {
-    patient_text: string;
-    medical_condition: string;
-    final_recommendation: string;
-    retrieved_docs: string; // Stringified JSON
-    patient_text_verified: boolean;
-    medical_condition_verified: boolean;
-    final_recommendation_verified: boolean;
-    retrieved_docs_verified: boolean;
-    patient_text_lgtm: boolean;
-    medical_condition_lgtm: boolean;
-    final_recommendation_lgtm: boolean;
-    retrieved_docs_lgtm: boolean;
-  };
-  updated_by: string | null;
-  timestamp: string;
-}
-
-interface PatientTabProps {
-  selectedItem: string | null;
-}
-
-interface Notification {
-  type: 'success' | 'error';
-  message: string;
-}
 
 const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
   const [patientData, setPatientData] = useState<PatientData | null>(null);
