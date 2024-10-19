@@ -1343,15 +1343,15 @@
 // export default PatientText;
 
 // ======================================= 6 ===================================================
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from '@/components/PatientComponents/StatusIndicator'; 
 import { Button } from "@/components/ui/button";
-import { Pencil, X, Check, User, Calendar, Activity, AlertTriangle, Pill, Droplet, Stethoscope, FileText } from "lucide-react";
+import { Pencil, X, Check, User, Calendar, Activity, AlertTriangle, Pill, Droplet, Stethoscope, FileText, Plus, Minus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PatientTextProps {
   text: string;
@@ -1363,40 +1363,28 @@ interface PatientTextProps {
 }
 
 interface PatientData {
-  patient_text: string;
-  medical_condition: string;
-  final_recommendation: string;
-  retrieved_docs: string;
-  patient_text_verified: boolean;
-  medical_condition_verified: boolean;
-  final_recommendation_verified: boolean;
-  retrieved_docs_verified: boolean;
-  patient_text_lgtm: boolean;
-  medical_condition_lgtm: boolean;
-  final_recommendation_lgtm: boolean;
-  retrieved_docs_lgtm: boolean;
-  lab_reports: Record<string, string>;
-  diagnostic_tests_and_results: Record<string, string>;
   [key: string]: any;
 }
 
-interface KeyValuePair {
-  key: string;
-  value: string;
-}
-
 const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdate, onReset, onTextChange }) => {
-  console.log("coming text",text)
   const [isEditing, setIsEditing] = useState(false);
-  const [jsonData, setJsonData] = useState<PatientData>({} as PatientData);
+  const [jsonData, setJsonData] = useState<PatientData>({});
+  const [editedData, setEditedData] = useState<PatientData>({});
+  const [newKey, setNewKey] = useState('');
+  const [newValue, setNewValue] = useState('');
+  const [showAddField, setShowAddField] = useState(false);
+  const [addFieldError, setAddFieldError] = useState('');
+
 
   useEffect(() => {
     try {
       const parsedData = JSON.parse(text);
-      setJsonData( parsedData );
+      setJsonData(parsedData);
+      setEditedData(parsedData);
     } catch (error) {
       console.error("Error parsing initial JSON:", error);
-      setJsonData({} as PatientData);
+      setJsonData({});
+      setEditedData({});
     }
   }, [text]);
 
@@ -1406,19 +1394,22 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
 
   const handleCancel = () => {
     setIsEditing(false);
-    try {
-      const parsedData = JSON.parse(text);
-      setJsonData(parsedData);
-    } catch (error) {
-      console.error("Error parsing JSON on cancel:", error);
-      setJsonData({} as PatientData);
-    }
+    setNewKey('');
+    setNewValue('');
+    setShowAddField(false);
+    setAddFieldError('');
+    setEditedData(jsonData);  // Revert to original data
   };
 
   const handleSave = () => {
     setIsEditing(false);
-    const updatedText = JSON.stringify(jsonData, null, 2);
-    onTextChange(updatedText);
+    setNewKey('');
+    setNewValue('');
+    setShowAddField(false);
+    setAddFieldError('');
+    setJsonData(editedData);  // Update the main data
+    const updatedText = JSON.stringify(editedData, null, 2);
+    onTextChange(updatedText);  // Send to parent component/database
   };
 
   const handleThumbsUp = () => {
@@ -1430,130 +1421,58 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
   };
 
   const handleFieldChange = (key: string, value: any) => {
-    setJsonData(prev => ({ ...prev, [key]: value }));
+    setEditedData(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleKeyValueChange = (field: string, key: string, value: string) => {
-    setJsonData(prev => {
-      const pairs = prev[field].split(', ').map((pair: string) => {
-        const [pairKey, pairValue] = pair.split(': ');
-        if (pairKey === key) {
-          return `${key}: ${value}`;
-        }
-        return pair;
-      });
-      return { ...prev, [field]: pairs.join(', ') };
+  const handleAddNewField = () => {
+    if (!newKey.trim() || !newValue.trim()) {
+      setAddFieldError('Both key and value must be non-empty.');
+      return;
+    }
+    setEditedData(prev => ({
+      ...prev,
+      [newKey.trim()]: newValue.trim()
+    }));
+    setNewKey('');
+    setNewValue('');
+    setShowAddField(false);
+    setAddFieldError('');
+  };
+
+  const handleDeleteField = (keyToDelete: string) => {
+    setEditedData(prev => {
+      const { [keyToDelete]: _, ...rest } = prev;
+      return rest;
     });
   };
 
   const getIcon = (key: string) => {
     switch (key) {
-      // case 'patient_text': return <User className="h-5 w-5 text-blue-500" />;
-      //case 'medical_condition': return <Activity className="h-5 w-5 text-red-500" />;
+      case 'patient_name': return <User className="h-5 w-5 text-blue-500" />;
+      case 'age': return <Calendar className="h-5 w-5 text-green-500" />;
+      case 'gender': return <Activity className="h-5 w-5 text-purple-500" />;
       case 'current_symptoms': return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
       case 'current_medications': return <Pill className="h-5 w-5 text-green-500" />;
       case 'patient_risk_factors': return <AlertTriangle className="h-5 w-5 text-orange-500" />;
       case 'lab_reports': return <Droplet className="h-5 w-5 text-blue-500" />;
       case 'diagnostic_tests_and_results': return <Stethoscope className="h-5 w-5 text-purple-500" />;
-      // case 'final_recommendation': return <FileText className="h-5 w-5 text-indigo-500" />;
-      // case 'retrieved_docs': return <FileText className="h-5 w-5 text-gray-500" />;
       default: return <FileText className="h-5 w-5 text-cyan-500 shadow-sm" />;
     }
   };
 
   const renderEditableField = (key: string, value: any) => {
-    if (['current_symptoms', 'current_medications', 'patient_risk_factors'].includes(key)) {
-      return (
-        <Textarea
-          value={value}
-          onChange={(e) => handleFieldChange(key, e.target.value)}
-          className="w -full"
-        />
-      );
-    } else if (['lab_reports', 'diagnostic_tests_and_results'].includes(key)) {
-      const pairs: KeyValuePair[] = value.split(',').map((pair: string) => {
-        const [pairKey, pairValue] = pair.split(':');
-        return { key: pairKey, value: pairValue };
-      });
-      return (
-        <div className="mt-2">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-          {pairs.map((pair: KeyValuePair, index: number) => (
-            <div key={index} className="flex flex-col">
-              {/* Key Label */}
-              <span className="text-gray-500 text-s font-medium">{pair.key}:</span>
-              
-              {/* Input field for value */}
-              <Input
-                value={pair.value}
-                onChange={(e) => handleKeyValueChange(key, pair.key, e.target.value)}
-                className="mt-1 flex-grow text-gray-600 font-semibold text-s border border-gray-300 rounded-md px-2 py-1"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      );
-    } else if (typeof value === 'boolean') {
-      return (
-        <Input
-          type="checkbox"
-          checked={value}
-          onChange={(e) => handleFieldChange(key, e.target.checked)}
-          className="mt-2"
-        />
-      );
-    } else {
-      return (
-        <textarea
-          value={value}
-          onChange={(e) => handleFieldChange(key, e.target.value)}
-          className="w-full mt-2 h-[10rem] px-3 py-2 resize-none overflow-y-auto border border-gray-300 rounded-md"
-          style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
-        />
-
-      
-
-
-      );
-    }
+    return (
+      <Textarea
+        value={value}
+        onChange={(e) => handleFieldChange(key, e.target.value)}
+        className="w-full mt-2 h-[7rem] px-3 py-2 resize-none overflow-y-auto border border-gray-300 rounded-md"
+        style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+      />
+    );
   };
 
   const renderField = (key: string, value: any) => {
-    if (['current_symptoms', 'current_medications', 'patient_risk_factors'].includes(key)) {
-      const items = value.split(',').map((item: string) => item.trim());
-      return (
-        <ul className="list-disc list-inside mt-2">
-          {items.map((item: string, index: number) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      );
-    } else if (['lab_reports', 'diagnostic_tests_and_results'].includes(key)) {
-      const pairs: KeyValuePair[] = value.split(',').map((pair: string) => {
-        const [pairKey, pairValue] = pair.split(':');
-        return { key: pairKey, value: pairValue };
-      });
-    
-      return (
-        <div className="mt-2">
-          
-          <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-              {pairs.map((pair: KeyValuePair, index: number) => (
-                <div key={index} className="flex flex-col">
-                  <span className="text-gray-500 text-[1rem]">{pair.key}</span>
-                  <span className="text-gray-800 font-semibold text-[1.1rem]">{pair.value}</span>
-                </div>
-              ))}
-            </div>
-        </div>
-      );
-    } else if (typeof value === 'boolean') {
-      return <p className="mt-2">{value.toString()}</p>;
-    } else {
-      return <p className="mt-2">{value}</p>;
-    }
+    return <p className="mt-2">{value}</p>;
   };
 
   return (
@@ -1576,40 +1495,53 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
+        {/* <ScrollArea className="h-[calc(100vh-200px)] pr-4"> */}
+          <div className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
               <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
                 <User className="h-8 w-8 text-blue-500" />
                 <div>
                   <h3 className="font-semibold text-sm text-gray-500 dark:text-gray-400">Patient Name</h3>
-                  <p className="font-semibold text-gray-800">{jsonData.patient_name}</p>
+                  <p className="font-semibold text-gray-800">{editedData.patient_name}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
                 <Calendar className="h-8 w-8 text-green-500" />
                 <div>
                   <h3 className="font-semibold text-sm text-gray-500 dark:text-gray-400">Age</h3>
-                  <p className="font-semibold text-gray-80">{jsonData.age}</p>
+                  <p className="font-semibold text-gray-800">{editedData.age}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
                 <Activity className="h-8 w-8 text-purple-500" />
                 <div>
                   <h3 className="font-semibold text-sm text-gray-500 dark:text-gray-400">Gender</h3>
-                  <p className="font-semibold text-gray-80">{jsonData.gender}</p>
+                  <p className="font-semibold text-gray-800">{editedData.gender}</p>
                 </div>
               </div>
             </div>
-            {Object.entries(jsonData).map(([key, value]) => {
-              if (value !== '' && value !== false && !['patient_id','patient_name', 'age', 'gender'].includes(key)) {
+            {Object.entries(editedData).map(([key, value]) => {
+              if (!['patient_id', 'patient_name', 'age', 'gender'].includes(key)) {
                 return (
                   <div
                     key={key}
                     className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-100 dark:border-gray-600"
                   >
-                      <div className="flex items-center space-x-2 mb-2">
-                      {getIcon(key)}
-                      <h3 className="text-lg font-semibold">{key}</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        {getIcon(key)}
+                        <h3 className="text-lg font-semibold">{key}</h3>
+                      </div>
+                      {isEditing && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDeleteField(key)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Minus size={16} />
+                        </Button>
+                      )}
                     </div>
                     {isEditing ? renderEditableField(key, value) : renderField(key, value)}
                   </div>
@@ -1617,23 +1549,64 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
               }
               return null;
             })}
+            {isEditing && (
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-100 dark:border-gray-600">
+                {!showAddField ? (
+                  <Button onClick={() => setShowAddField(true)} className="w-full">
+                    <Plus size={16} className="mr-2" /> Add Field
+                  </Button>
+                ) : (
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold mb-2">Add New Field</h3>
+                    <Input
+                      placeholder="Key"
+                      value={newKey}
+                      onChange={(e) => setNewKey(e.target.value)}
+                      className="w-full"
+                    />
+                    <Textarea
+                      placeholder="Value"
+                      value={newValue}
+                      onChange={(e) => setNewValue(e.target.value)}
+                      className="w-full h-24 resize-none"
+                    />
+                    {addFieldError && (
+                      <Alert variant="destructive">
+                        <AlertDescription>{addFieldError}</AlertDescription>
+                      </Alert>
+                    )}
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => {
+                        setShowAddField(false);
+                        setNewKey('');
+                        setNewValue('');
+                        setAddFieldError('');
+                      }}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAddNewField}>
+                        Add Field
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           {isEditing && (
-            <div className="mt-6 flex justify-end space-x-2">
-              <Button variant="outline" size="sm" onClick={handleCancel}>
-                <X size={16} className="mr-2" /> Cancel
-              </Button>
-              <Button variant="default" size="sm" onClick={handleSave}>
-                <Check size={16} className="mr- 2" /> Save
-              </Button>
-            </div>
-          )}
-
+              <div className="mt-6 flex justify-end space-x-2">
+                <Button variant="outline" size="sm" onClick={handleCancel}>
+                  <X size={16} className="mr-2" /> Cancel
+                </Button>
+                <Button variant="default" size="sm" onClick={handleSave}>
+                  <Check size={16} className="mr-2" /> Save
+                </Button>
+              </div>
+            )}
+        {/* </ScrollArea> */}
       </CardContent>
     </Card>
   );
 };
 
 export default PatientText;
-
-//======================================= 6 ===================================================

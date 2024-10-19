@@ -8,9 +8,6 @@ export async function GET(request: Request, context:any) {
     cache:"no-cache"
   });
   const data = await response.json();
-  console.log("from api ", data.patient_data.patient_text_verified);
-  console.log("from api ", data.patient_data.patient_text_lgtm);
-  
   return NextResponse.json(data);
 }
 
