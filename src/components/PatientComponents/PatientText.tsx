@@ -1467,17 +1467,17 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         <Textarea
           value={value}
           onChange={(e) => handleFieldChange(key, e.target.value)}
-          className="w -full mt-2"
+          className="w -full"
         />
       );
     } else if (['lab_reports', 'diagnostic_tests_and_results'].includes(key)) {
-      const pairs: KeyValuePair[] = value.split(', ').map((pair: string) => {
-        const [pairKey, pairValue] = pair.split(': ');
+      const pairs: KeyValuePair[] = value.split(',').map((pair: string) => {
+        const [pairKey, pairValue] = pair.split(':');
         return { key: pairKey, value: pairValue };
       });
       return (
         <div className="mt-2">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
           {pairs.map((pair: KeyValuePair, index: number) => (
             <div key={index} className="flex flex-col">
               {/* Key Label */}
@@ -1531,8 +1531,8 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         </ul>
       );
     } else if (['lab_reports', 'diagnostic_tests_and_results'].includes(key)) {
-      const pairs: KeyValuePair[] = value.split(', ').map((pair: string) => {
-        const [pairKey, pairValue] = pair.split(': ');
+      const pairs: KeyValuePair[] = value.split(',').map((pair: string) => {
+        const [pairKey, pairValue] = pair.split(':');
         return { key: pairKey, value: pairValue };
       });
     
@@ -1576,7 +1576,6 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[calc(100vh+5.938rem)] pr-4">
         <div className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
               <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
@@ -1629,7 +1628,7 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
               </Button>
             </div>
           )}
-        </ScrollArea>
+
       </CardContent>
     </Card>
   );

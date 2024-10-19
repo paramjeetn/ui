@@ -19,6 +19,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
   const [editedCondition, setEditedCondition] = useState(condition);
 
   const handleEdit = () => {
+    setEditedCondition(condition);
     setIsEditing(true);
   };
 
@@ -32,13 +33,26 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
     onTextChange(editedCondition);
   };
 
-  const conditionsList = condition.replace(/^Medical Conditions:\s*/, '').split(',')
+  const parseConditions = (conditionString: string) => {
+    // Remove "Medical Conditions:" prefix if it exists
+    const cleanedString = conditionString;
+    
+    // If there are no commas, return the whole string as a single condition
+    if (!cleanedString.includes(',')) {
+      return [cleanedString];
+    }
+    
+    // Split by comma and trim each condition
+    return cleanedString.split(',').map(cond => cond.trim()).filter(cond => cond !== '');
+  };
+
+  const conditionsList = parseConditions(condition);
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+      <CardHeader className="flex flex-row items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Medical Condition</CardTitle>
-          <div className="flex items-center space-x-2 flex-grow mr-2 ml-2"> {/* Added flex-grow here */}
+        <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
           <StatusIndicator
             verified={verified}
             lgtm={lgtm}
@@ -55,6 +69,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
       <CardContent>
         {isEditing ? (
           <>
+          
             <Textarea
               value={editedCondition}
               onChange={(e) => setEditedCondition(e.target.value)}
@@ -70,20 +85,17 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
             </div>
           </>
         ) : (
-          // <p className="text-sm">{condition}</p>
           <div className="flex flex-wrap gap-2">
-              {conditionsList.map((condition, index) => (
-                condition && condition.trim() !== '' && !condition.includes('\n') ? (
-                  <Button
-                    key={index}
-                    variant="secondary"
-                    className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
-                  >
-                    {condition.trim()}
-                  </Button>
-                ) : null
-              ))}
-            </div>
+            {conditionsList.map((condition, index) => (
+              <Button
+                key={index}
+                variant="secondary"
+                className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
+              >
+                {condition}
+              </Button>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>

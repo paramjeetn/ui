@@ -81,7 +81,7 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
                   <DialogHeader>
                     <DialogTitle>{extractLabel(doc.item.id)}</DialogTitle>
                   </DialogHeader>
-                  <ScrollArea className="h-[250px] w-full rounded-md border p-4">
+                  <ScrollArea className="text-sm h-[250px] w-full rounded-md border p-4 whitespace-pre-wrap">
                     <p>{doc.item.meta.guideline || "No guideline available"}</p>
                   </ScrollArea>
                   <div className="text-sm text-gray-500">

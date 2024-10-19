@@ -76,7 +76,6 @@
 // };
 
 // export default GuidelineText;
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import StatusIndicator from './StatusIndicator';
@@ -115,37 +114,19 @@ const GuidelineText: React.FC<GuidelineTextProps> = ({ text, verified, lgtm, onU
     onTextChange(editedText);
   };
 
-  const renderStructuredText = (content: string) => {
-    const lines = content.split('\n');
-    return (
-      <div className="space-y-4">
-        {lines.map((line, index) => {
-          if (line.includes(':')) {
-            const [key, value] = line.split(':');
-            return (
-              <div key={index} className="border-b pb-2">
-                <span className="font-semibold text-blue-600">{key.trim()}:</span>
-                <span className="ml-2">{value.trim()}</span>
-              </div>
-            );
-          } else if (line.trim().startsWith('-')) {
-            return (
-              <div key={index} className="ml-4">
-                <span className="text-gray-600">•</span>
-                <span className="ml-2">{line.trim().substring(1)}</span>
-              </div>
-            );
-          } else {
-            return <p key={index} className="text-sm">{line}</p>;
-          }
-        })}
-      </div>
-    );
+  const renderText = (content: string) => {
+    // Replace newline characters with <br /> tags
+    return content.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
   };
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+      <CardHeader className="flex flex-row items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Guideline Text</CardTitle>
         <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
           <StatusIndicator
@@ -167,7 +148,7 @@ const GuidelineText: React.FC<GuidelineTextProps> = ({ text, verified, lgtm, onU
             <Textarea
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
-              className="min-h-[200px]"
+              className="w-full h-full min-h-[480px] text-sm whitespace-pre-wrap"
             />
             <div className="mt-4 flex justify-end space-x-2">
               <Button variant="outline" size="sm" onClick={handleCancel}>
@@ -179,8 +160,8 @@ const GuidelineText: React.FC<GuidelineTextProps> = ({ text, verified, lgtm, onU
             </div>
           </>
         ) : (
-          <div className="text-sm overflow-auto max-h-[400px]">
-            {text ? renderStructuredText(text) : 'No guideline text available.'}
+          <div className="text-sm whitespace-pre-wrap p-4 h-full min-h-[180px] overflow-y-auto">
+            {text ? renderText(text) : 'No guideline text available.'}
           </div>
         )}
       </CardContent>

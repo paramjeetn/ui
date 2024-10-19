@@ -63,10 +63,10 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
           {error && <p className="text-red-500">{error}</p>}
           <Button type="submit">Login</Button>
         </form>
-        <div className="mt-4 text-center">
+        {/* <div className="mt-4 text-center">
           <p>Don't have an account?</p>
           <Button variant="link" onClick={onSwitchToRegister}>Register</Button>
-        </div>
+        </div> */}
       </DialogContent>
     </Dialog>
   )

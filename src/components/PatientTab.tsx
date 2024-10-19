@@ -35,6 +35,9 @@ const useDebounce = (callback: Function, delay: number) => {
 
 const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
   const [patientData, setPatientData] = useState<PatientData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [isSaving, setIsSaving] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
 
@@ -57,6 +60,8 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
   }, [notification]);
 
   const fetchPatientData = async (patientId: string) => {
+    setLoading(true);
+
     try {
       const response = await fetch(`/api/get_patient/${patientId}`,
         {
@@ -77,6 +82,9 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
     } catch (error) {
       console.error('Error fetching patient data:', error);
       setNotification({ type: 'error', message: 'Failed to fetch patient data. Please try again.' });
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -172,6 +180,13 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
       savePatientData(updatedData);
     }
   };
+
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!patientData) return <div>No patient data available.</div>;
+
+
   return (
     <div className="p-4 relative">
       {notification && (

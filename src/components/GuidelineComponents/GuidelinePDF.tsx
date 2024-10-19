@@ -10,7 +10,7 @@ interface GuidelinePDFProps {
 const GuidelinePDF: React.FC<GuidelinePDFProps> = ({ pdfUrl }) => {
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+      <CardHeader className="flex flex-row items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Guideline PDF</CardTitle>
       </CardHeader>
       <CardContent>

@@ -20,6 +20,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
   const [editedCondition, setEditedCondition] = useState(condition);
 
   const handleEdit = () => {
+    setEditedCondition(condition)
     setIsEditing(true);
   };
 
@@ -69,7 +70,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
         <Textarea
           value={editedCondition}
           onChange={(e) => setEditedCondition(e.target.value)}
-          className="min-h-[100px] w-full border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600 pr-10"
+          className="min-h-[80px] w-full border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600 pr-10"
         />
         
       <div className="flex justify-end space-x-2 mt-2">

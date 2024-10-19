@@ -4,8 +4,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from '@/components/PatientComponents/StatusIndicator';
 import { Button } from "@/components/ui/button";
 import { Pencil, X, Check } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from 'react-markdown';
+import MDEditor from '@uiw/react-md-editor';
 
 interface FinalRecommendationProps {
   recommendation: string;
@@ -62,25 +62,28 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-72 pr-4">
-          {isEditing ? (
-            <>
-              <Textarea
-                value={editedRecommendation}
-                onChange={(e) => setEditedRecommendation(e.target.value)}
-                className="min-h-[200px]"
-              />
-              <div className="mt-4 flex justify-end space-x-2">
-                <Button variant="outline" size="sm" onClick={handleCancel}>
-                  <X size={16} className="mr-2" /> Cancel
-                </Button>
-                <Button variant="default" size="sm" onClick={handleSave}>
-                  <Check size={16} className="mr-2" /> Save
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="prose dark:prose-invert max-w-none markdown-content">
+        {isEditing ? (
+          <div data-color-mode="light">
+            <MDEditor
+              value={editedRecommendation}
+              onChange={(value) => setEditedRecommendation(value || '')}
+              preview="edit"
+              className="text-sm small-text-editor"
+              height={340}
+              text-size={"text-sm"}
+            />
+            <div className="mt-4 flex justify-end space-x-2">
+              <Button variant="outline" size="sm" onClick={handleCancel}>
+                <X size={16} className="mr-2" /> Cancel
+              </Button>
+              <Button variant="default" size="sm" onClick={handleSave}>
+                <Check size={16} className="mr-2" /> Save
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <ScrollArea className="h-[320px] w-full rounded-md border p-4">
+            <div className="prose text-sm dark:prose-invert max-w-none markdown-content">
               <ReactMarkdown
                 components={{
                   h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-4 mb-2" {...props} />,
@@ -95,8 +98,8 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
                 {recommendation}
               </ReactMarkdown>
             </div>
-          )}
-        </ScrollArea>
+          </ScrollArea>
+        )}
       </CardContent>
     </Card>
   );

@@ -3,8 +3,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import StatusIndicator from '@/components/GuidelineComponents/StatusIndicator';
 import { Button } from "@/components/ui/button";
 import { Pencil, X, Check } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from 'react-markdown';
+import MDEditor from '@uiw/react-md-editor';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface GuidelineCriteriaProps {
   criteria: string;
@@ -35,7 +36,7 @@ const GuidelineCriteria: React.FC<GuidelineCriteriaProps> = ({ criteria, verifie
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+      <CardHeader className="flex flex-row  items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Guideline Criteria</CardTitle>
         <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
           <StatusIndicator
@@ -53,11 +54,12 @@ const GuidelineCriteria: React.FC<GuidelineCriteriaProps> = ({ criteria, verifie
       </CardHeader>
       <CardContent>
         {isEditing ? (
-          <>
-            <Textarea
+          <div data-color-mode="light">
+            <MDEditor
               value={editedCriteria}
-              onChange={(e) => setEditedCriteria(e.target.value)}
-              className="min-h-[100px]"
+              onChange={(value) => setEditedCriteria(value || '')}
+              preview="edit"
+              height={340}
             />
             <div className="mt-4 flex justify-end space-x-2">
               <Button variant="outline" size="sm" onClick={handleCancel}>
@@ -67,23 +69,25 @@ const GuidelineCriteria: React.FC<GuidelineCriteriaProps> = ({ criteria, verifie
                 <Check size={16} className="mr-2" /> Save
               </Button>
             </div>
-          </>
-        ) : (
-          <div className="prose dark:prose-invert max-w-none">
-            <ReactMarkdown
-              components={{
-                h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-4 mb-2" {...props} />,
-                h2: ({node, ...props}) => <h2 className="text-xl font-semibold mt-3 mb-2" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-lg font-medium mt-2 mb-1" {...props} />,
-                p: ({node, ...props}) => <p className="mb-2 text-sm" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
-                li: ({node, ...props}) => <li className="mb-1 text-sm" {...props} />,
-              }}
-            >
-              {criteria}
-            </ReactMarkdown>
           </div>
+        ) : (
+          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+            <div className="prose dark:prose-invert max-w-none">
+              <ReactMarkdown
+                components={{
+                  h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-4 mb-2" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-xl font-semibold mt-3 mb-2" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-lg font-medium mt-2 mb-1" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-2 text-sm" {...props} />,
+                  ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                  ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+                  li: ({node, ...props}) => <li className="mb-1 text-sm" {...props} />,
+                }}
+              >
+                {criteria}
+              </ReactMarkdown>
+            </div>
+          </ScrollArea>
         )}
       </CardContent>
     </Card>
