@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from '@/components/PatientComponents/StatusIndicator';
 import { Button } from "@/components/ui/button";
-import { Pencil, X, Check } from "lucide-react";
+import { Pencil, X, Check, HelpCircle } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 interface MedicalConditionProps {
@@ -66,20 +66,22 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
         <ScrollArea className="max-h-40 pr-4">
           {isEditing ? (
             <>
-              <Textarea
-                value={editedCondition}
-                onChange={(e) => setEditedCondition(e.target.value)}
-                className="min-h-[100px]"
-              />
-              <div className="mt-4 flex justify-end space-x-2">
-                <Button variant="outline" size="sm" onClick={handleCancel}>
-                  <X size={16} className="mr-2" /> Cancel
-                </Button>
-                <Button variant="default" size="sm" onClick={handleSave}>
-                  <Check size={16} className="mr-2" /> Save
-                </Button>
-              </div>
+        <Textarea
+          value={editedCondition}
+          onChange={(e) => setEditedCondition(e.target.value)}
+          className="min-h-[100px] w-full border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600 pr-10"
+        />
+        
+      <div className="flex justify-end space-x-2 mt-2">
+        <Button variant="outline" size="sm" onClick={handleCancel}>
+          <X size={16} className="mr-2" /> Cancel
+        </Button>
+        <Button variant="default" size="sm" onClick={handleSave}>
+          <Check size={16} className="mr-2" /> Save
+        </Button>
+      </div>
             </>
+            
           ) : (
             <div className="flex flex-wrap gap-2">
               {conditionsList.map((condition, index) => (

@@ -5,6 +5,7 @@ import StatusIndicator from '@/components/PatientComponents/StatusIndicator';
 import { Button } from "@/components/ui/button";
 import { Pencil, X, Check } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import ReactMarkdown from 'react-markdown';
 
 interface FinalRecommendationProps {
   recommendation: string;
@@ -45,7 +46,7 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
     <Card className="mb-4">
       <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Final Recommendation</CardTitle>
-          <div className="flex items-center space-x-2 flex-grow mr-2 ml-2"> {/* Added flex-grow here */}
+        <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
           <StatusIndicator
             verified={verified}
             lgtm={lgtm}
@@ -79,7 +80,21 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
               </div>
             </>
           ) : (
-            <p className="text-sm">{recommendation}</p>
+            <div className="prose dark:prose-invert max-w-none markdown-content">
+              <ReactMarkdown
+                components={{
+                  h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-4 mb-2" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-xl font-semibold mt-3 mb-2" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-lg font-medium mt-2 mb-1" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                  ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                  ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+                  li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                }}
+              >
+                {recommendation}
+              </ReactMarkdown>
+            </div>
           )}
         </ScrollArea>
       </CardContent>
