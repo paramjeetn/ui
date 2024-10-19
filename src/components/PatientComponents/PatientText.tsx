@@ -1375,8 +1375,8 @@ interface PatientData {
   medical_condition_lgtm: boolean;
   final_recommendation_lgtm: boolean;
   retrieved_docs_lgtm: boolean;
-  lab_reports: string;
-  diagnostic_tests_and_results: string;
+  lab_reports: Record<string, string>;
+  diagnostic_tests_and_results: Record<string, string>;
   [key: string]: any;
 }
 
@@ -1386,13 +1386,14 @@ interface KeyValuePair {
 }
 
 const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdate, onReset, onTextChange }) => {
+  console.log("coming text",text)
   const [isEditing, setIsEditing] = useState(false);
   const [jsonData, setJsonData] = useState<PatientData>({} as PatientData);
 
   useEffect(() => {
     try {
       const parsedData = JSON.parse(text);
-      setJsonData(parsedData);
+      setJsonData( parsedData );
     } catch (error) {
       console.error("Error parsing initial JSON:", error);
       setJsonData({} as PatientData);
@@ -1447,16 +1448,16 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
 
   const getIcon = (key: string) => {
     switch (key) {
-      case 'patient_text': return <User className="h-5 w-5 text-blue-500" />;
-      case 'medical_condition': return <Activity className="h-5 w-5 text-red-500" />;
+      // case 'patient_text': return <User className="h-5 w-5 text-blue-500" />;
+      //case 'medical_condition': return <Activity className="h-5 w-5 text-red-500" />;
       case 'current_symptoms': return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
       case 'current_medications': return <Pill className="h-5 w-5 text-green-500" />;
       case 'patient_risk_factors': return <AlertTriangle className="h-5 w-5 text-orange-500" />;
       case 'lab_reports': return <Droplet className="h-5 w-5 text-blue-500" />;
       case 'diagnostic_tests_and_results': return <Stethoscope className="h-5 w-5 text-purple-500" />;
-      case 'final_recommendation': return <FileText className="h-5 w-5 text-indigo-500" />;
-      case 'retrieved_docs': return <FileText className="h-5 w-5 text-gray-500" />;
-      default: return <FileText className="h-5 w-5 text-gray-500" />;
+      // case 'final_recommendation': return <FileText className="h-5 w-5 text-indigo-500" />;
+      // case 'retrieved_docs': return <FileText className="h-5 w-5 text-gray-500" />;
+      default: return <FileText className="h-5 w-5 text-cyan-500 shadow-sm" />;
     }
   };
 
@@ -1466,7 +1467,7 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         <Textarea
           value={value}
           onChange={(e) => handleFieldChange(key, e.target.value)}
-          className="w-full mt-2"
+          className="w -full mt-2"
         />
       );
     } else if (['lab_reports', 'diagnostic_tests_and_results'].includes(key)) {
@@ -1475,18 +1476,24 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         return { key: pairKey, value: pairValue };
       });
       return (
-        <div className="space-y-2 mt-2">
+        <div className="mt-2">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-6">
           {pairs.map((pair: KeyValuePair, index: number) => (
-            <div key={index} className="flex items-center space-x-2">
-              <span className="font-medium w-1/3">{pair.key}:</span>
+            <div key={index} className="flex flex-col">
+              {/* Key Label */}
+              <span className="text-gray-500 text-s font-medium">{pair.key}:</span>
+              
+              {/* Input field for value */}
               <Input
                 value={pair.value}
                 onChange={(e) => handleKeyValueChange(key, pair.key, e.target.value)}
-                className="flex-grow"
+                className="mt-1 flex-grow text-gray-600 font-semibold text-s border border-gray-300 rounded-md px-2 py-1"
               />
             </div>
           ))}
         </div>
+      </div>
+
       );
     } else if (typeof value === 'boolean') {
       return (
@@ -1499,11 +1506,16 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
       );
     } else {
       return (
-        <Input
+        <textarea
           value={value}
           onChange={(e) => handleFieldChange(key, e.target.value)}
-          className="w-full mt-2"
+          className="w-full mt-2 h-[10rem] px-3 py-2 resize-none overflow-y-auto border border-gray-300 rounded-md"
+          style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
         />
+
+      
+
+
       );
     }
   };
@@ -1523,14 +1535,18 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         const [pairKey, pairValue] = pair.split(': ');
         return { key: pairKey, value: pairValue };
       });
+    
       return (
-        <div className="grid grid-cols-2 gap-4 mt-2">
-          {pairs.map((pair: KeyValuePair, index: number) => (
-            <div key={index} className="flex items-center space-x-2">
-              <span className="font-medium">{pair.key}:</span>
-              <span>{pair.value}</span>
+        <div className="mt-2">
+          
+          <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+              {pairs.map((pair: KeyValuePair, index: number) => (
+                <div key={index} className="flex flex-col">
+                  <span className="text-gray-500 text-[1rem]">{pair.key}</span>
+                  <span className="text-gray-800 font-semibold text-[1.1rem]">{pair.value}</span>
+                </div>
+              ))}
             </div>
-          ))}
         </div>
       );
     } else if (typeof value === 'boolean') {
@@ -1560,15 +1576,41 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[calc(100vh-200px)] pr-4">
-          <div className="space-y-6">
+        <ScrollArea className="h-[calc(100vh+5.938rem)] pr-4">
+        <div className="space-y-6">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                <User className="h-8 w-8 text-blue-500" />
+                <div>
+                  <h3 className="font-semibold text-sm text-gray-500 dark:text-gray-400">Patient Name</h3>
+                  <p className="font-semibold text-gray-800">{jsonData.patient_name}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                <Calendar className="h-8 w-8 text-green-500" />
+                <div>
+                  <h3 className="font-semibold text-sm text-gray-500 dark:text-gray-400">Age</h3>
+                  <p className="font-semibold text-gray-80">{jsonData.age}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                <Activity className="h-8 w-8 text-purple-500" />
+                <div>
+                  <h3 className="font-semibold text-sm text-gray-500 dark:text-gray-400">Gender</h3>
+                  <p className="font-semibold text-gray-80">{jsonData.gender}</p>
+                </div>
+              </div>
+            </div>
             {Object.entries(jsonData).map(([key, value]) => {
-              if (value !== '' && value !== false) {
+              if (value !== '' && value !== false && !['patient_id','patient_name', 'age', 'gender'].includes(key)) {
                 return (
-                  <div key={key} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                    <div className="flex items-center space-x-2 mb-2">
+                  <div
+                    key={key}
+                    className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-100 dark:border-gray-600"
+                  >
+                      <div className="flex items-center space-x-2 mb-2">
                       {getIcon(key)}
-                      <h3 className="font-semibold">{key}</h3>
+                      <h3 className="text-lg font-semibold">{key}</h3>
                     </div>
                     {isEditing ? renderEditableField(key, value) : renderField(key, value)}
                   </div>
@@ -1583,7 +1625,7 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
                 <X size={16} className="mr-2" /> Cancel
               </Button>
               <Button variant="default" size="sm" onClick={handleSave}>
-                <Check size={16} className="mr-2" /> Save
+                <Check size={16} className="mr- 2" /> Save
               </Button>
             </div>
           )}
@@ -1594,3 +1636,5 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
 };
 
 export default PatientText;
+
+//======================================= 6 ===================================================

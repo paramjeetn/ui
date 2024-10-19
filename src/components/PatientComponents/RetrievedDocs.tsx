@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from './StatusIndicator'; // Ensure this component is created
+import { FileText } from "lucide-react";
 
 interface RetrievedDoc {
   item: {
@@ -47,8 +48,9 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row items-center justify-between py-2">
-        <CardTitle className="text-md font-semibold">Retrieved Docs</CardTitle>
+      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+        <CardTitle className="text-xl font-semibold">Retrieved Docs</CardTitle>
+          <div className="flex items-center space-x-2 flex-grow mr-2 ml-2"> {/* Added flex-grow here */}
         <StatusIndicator
           verified={verified}
           lgtm={lgtm}
@@ -57,6 +59,7 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
           onReset={onReset}
 
         />
+        </div>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-60 pr-4">
@@ -66,11 +69,12 @@ const RetrievedDocs: React.FC<RetrievedDocsProps> = ({ docs, verified, lgtm, onU
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-between"
+                    className="w-full"
                     onClick={() => setSelectedDoc(doc)}
                   >
-                    <span>{extractLabel(doc.item.id)}</span>
-                    <span className="text-sm text-gray-500">Score: {doc.score.toFixed(2)}</span>
+                    <FileText className="h-5 mr-2 text-blue-500" />
+                    <span className="font-semibold">{extractLabel(doc.item.id)}</span>
+                    <span className="text-sm ml-auto text-gray-500">Score: {doc.score.toFixed(2)}</span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="">

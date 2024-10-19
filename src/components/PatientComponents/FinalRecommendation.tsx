@@ -43,9 +43,9 @@ const FinalRecommendation: React.FC<FinalRecommendationProps> = ({ recommendatio
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row items-center justify-between py-2">
-        <CardTitle className="text-md font-semibold">Final Recommendation</CardTitle>
-        <div className="flex items-center space-x-2">
+      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+        <CardTitle className="text-xl font-semibold">Final Recommendation</CardTitle>
+          <div className="flex items-center space-x-2 flex-grow mr-2 ml-2"> {/* Added flex-grow here */}
           <StatusIndicator
             verified={verified}
             lgtm={lgtm}
