@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from '@/components/GuidelineComponents/StatusIndicator';
 import { Button } from "@/components/ui/button";
-import { Pencil, X, Check } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+import { Pencil, X, Check, Plus, Minus } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface MedicalConditionProps {
   condition: string;
@@ -16,44 +18,59 @@ interface MedicalConditionProps {
 
 const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate, onReset, onTextChange }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedCondition, setEditedCondition] = useState(condition);
+  const [editedConditions, setEditedConditions] = useState(condition.replace(/^Medical Conditions:\s*/, '').split(',').filter(c => c.trim() !== ''));
+  const [newCondition, setNewCondition] = useState('');
+
 
   const handleEdit = () => {
-    setEditedCondition(condition);
     setIsEditing(true);
   };
 
+
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedCondition(condition);
+    setEditedConditions(condition.replace(/^Medical Conditions:\s*/, '').split(',').filter(c => c.trim() !== ''));
   };
 
-  const handleSave = () => {
+ const handleSave = () => {
     setIsEditing(false);
-    onTextChange(editedCondition);
+    onTextChange(`Medical Conditions: ${editedConditions.join(', ')}`);
   };
 
-  const parseConditions = (conditionString: string) => {
-    // Remove "Medical Conditions:" prefix if it exists
-    const cleanedString = conditionString;
-    
-    // If there are no commas, return the whole string as a single condition
-    if (!cleanedString.includes(',')) {
-      return [cleanedString];
+
+  const handleAddCondition = () => {
+    if (newCondition.trim() !== '') {
+      setEditedConditions([...editedConditions, newCondition.trim()]);
+      setNewCondition('');
     }
-    
-    // Split by comma and trim each condition
-    return cleanedString.split(',').map(cond => cond.trim()).filter(cond => cond !== '');
   };
 
-  const conditionsList = parseConditions(condition);
+  const handleRemoveCondition = (index: number) => {
+    const updatedConditions = editedConditions.filter((_, i) => i !== index);
+    setEditedConditions(updatedConditions);
+  };
+
+  // const parseConditions = (conditionString: string) => {
+  //   // Remove "Medical Conditions:" prefix if it exists
+  //   const cleanedString = conditionString;
+    
+  //   // If there are no commas, return the whole string as a single condition
+  //   if (!cleanedString.includes(',')) {
+  //     return [cleanedString];
+  //   }
+    
+  //   // Split by comma and trim each condition
+  //   return cleanedString.split(',').map(cond => cond.trim()).filter(cond => cond !== '');
+  // };
+
+  // const conditionsList = parseConditions(condition);
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row items-center justify-between py-2">
+      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Medical Condition</CardTitle>
         <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
-          <StatusIndicator
+        <StatusIndicator
             verified={verified}
             lgtm={lgtm}
             onUpdate={onUpdate}
@@ -67,39 +84,56 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
         </div>
       </CardHeader>
       <CardContent>
-        {isEditing ? (
-          <>
-          
-            <Textarea
-              value={editedCondition}
-              onChange={(e) => setEditedCondition(e.target.value)}
-              className="min-h-[100px]"
-            />
-            <div className="mt-4 flex justify-end space-x-2">
-              <Button variant="outline" size="sm" onClick={handleCancel}>
-                <X size={16} className="mr-2" /> Cancel
-              </Button>
-              <Button variant="default" size="sm" onClick={handleSave}>
-                <Check size={16} className="mr-2" /> Save
-              </Button>
-            </div>
-          </>
-        ) : (
+        <ScrollArea className="max-h-50 pr-4">
           <div className="flex flex-wrap gap-2">
-            {conditionsList.map((condition, index) => (
+            {editedConditions.map((condition, index) => (
               <Button
                 key={index}
                 variant="secondary"
-                className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
+                className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold flex items-center"
               >
-                {condition}
+                {condition.trim()}
+                {isEditing && (
+                  <Minus
+                    size={16}
+                    className="ml-2 text-red-500 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveCondition(index);
+                    }}
+                  />
+                )}
               </Button>
             ))}
+          </div>
+          {isEditing && (
+            <div className="mt-4 flex items-center">
+              <Input
+                value={newCondition}
+                onChange={(e) => setNewCondition(e.target.value)}
+                placeholder="Add new condition"
+                className="flex-grow mr-2"
+              />
+              <Button variant="outline" size="sm" onClick={handleAddCondition}>
+                <Plus size={16} className="mr-2" /> Add
+              </Button>
+            </div>
+          )}
+        </ScrollArea>
+        {isEditing && (
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" size="sm" onClick={handleCancel}>
+              <X size={16} className="mr-2" /> Cancel
+            </Button>
+            <Button variant="default" size="sm" onClick={handleSave}>
+              <Check size={16} className="mr-2" /> Save
+            </Button>
           </div>
         )}
       </CardContent>
     </Card>
   );
 };
+
 
 export default MedicalCondition;
