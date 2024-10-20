@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -32,6 +31,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
 
   const handleSave = () => {
     setIsEditing(false);
+    setNewCondition('')
     onTextChange(`Medical Conditions: ${editedConditions.join(', ')}`);
   };
 
@@ -76,36 +76,39 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
       </CardHeader>
       <CardContent>
         <ScrollArea className="max-h-50 pr-4">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mt-2">
             {editedConditions.map((condition, index) => (
               <Button
                 key={index}
                 variant="secondary"
-                className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold flex items-center"
+                className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold flex items-center relative"
               >
                 {condition.trim()}
                 {isEditing && (
-                  <Minus
-                    size={16}
-                    className="ml-2 text-red-500 cursor-pointer"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute -top-1 -right-1 rounded-full p-0 w-4 h-4 bg-red-100 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center border border-red-200 hover:border-red-500 transition-colors duration-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemoveCondition(index);
                     }}
-                  />
+                  >
+                    <Minus size={10} />
+                  </Button>
                 )}
               </Button>
             ))}
           </div>
           {isEditing && (
-            <div className="mt-4 flex items-center">
+            <div className=" m-1 mt-4 flex items-center">
               <Input
                 value={newCondition}
                 onChange={(e) => setNewCondition(e.target.value)}
                 placeholder="Add new condition"
                 className="flex-grow mr-2"
               />
-              <Button variant="outline" size="sm" onClick={handleAddCondition}>
+              <Button variant="default" size="sm" onClick={handleAddCondition} className="bg-black text-white hover:bg-gray-800">
                 <Plus size={16} className="mr-2" /> Add
               </Button>
             </div>
