@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from '@/components/PatientComponents/StatusIndicator';
@@ -15,24 +15,46 @@ interface MedicalConditionProps {
   onTextChange: (newText: string) => void;
 }
 
-const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate, onReset, onTextChange }) => {
+const MedicalCondition: React.FC<MedicalConditionProps> = ({
+  condition,
+  verified,
+  lgtm,
+  onUpdate,
+  onReset,
+  onTextChange
+}) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedConditions, setEditedConditions] = useState(condition.replace(/^Medical Conditions:\s*/, '').split(',').filter(c => c.trim() !== ''));
+  const [editedConditions, setEditedConditions] = useState<string[]>([]);
   const [newCondition, setNewCondition] = useState('');
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const parseConditions = useCallback((conditionString: string): string[] => {
+    return conditionString
+      .replace(/^Medical Conditions:\s*/, '')
+      .split(',')
+      .map(c => c.trim())
+      .filter(c => c !== '');
+  }, []);
+
+  useEffect(() => {
+    setEditedConditions(parseConditions(condition));
+  }, [condition, parseConditions]);
+
+  const handleEdit = () => setIsEditing(true);
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedConditions(condition.replace(/^Medical Conditions:\s*/, '').split(',').filter(c => c.trim() !== ''));
+    setEditedConditions(parseConditions(condition));
+    setNewCondition('');
   };
 
   const handleSave = () => {
     setIsEditing(false);
-    setNewCondition('')
-    onTextChange(`Medical Conditions: ${editedConditions.join(', ')}`);
+    const trimmedConditions = editedConditions
+      .map(c => c.trim())
+      .filter(c => c !== '');
+    const uniqueConditions = Array.from(new Set(trimmedConditions));
+    onTextChange(`Medical Conditions: ${uniqueConditions.join(', ')}`);
+    setNewCondition('');
   };
 
   const handleThumbsUp = () => {
@@ -44,15 +66,19 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
   };
 
   const handleAddCondition = () => {
-    if (newCondition.trim() !== '') {
-      setEditedConditions([...editedConditions, newCondition.trim()]);
+    const commaOnlyRegex = /^[\s,]*$/;
+    if ((newCondition.trim() !== '' && newCondition.trim() !== '') || !(commaOnlyRegex.test(newCondition.trim()))) {
+      setEditedConditions(prev => [...prev, newCondition.trim()]);
       setNewCondition('');
     }
   };
 
   const handleRemoveCondition = (index: number) => {
-    const updatedConditions = editedConditions.filter((_, i) => i !== index);
-    setEditedConditions(updatedConditions);
+    setEditedConditions(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleConditionChange = (index: number, value: string) => {
+    setEditedConditions(prev => prev.map((c, i) => i === index ? value : c));
   };
 
   return (
@@ -78,37 +104,53 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified
         <ScrollArea className="max-h-50 pr-4">
           <div className="flex flex-wrap gap-2 mt-2">
             {editedConditions.map((condition, index) => (
-              <Button
-                key={index}
-                variant="secondary"
-                className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold flex items-center relative"
-              >
-                {condition.trim()}
+              <div key={index} className="relative group">
+                {isEditing ? (
+                  <Input
+                    value={condition}
+                    onChange={(e) => handleConditionChange(index, e.target.value)}
+                    className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
+                  />
+                ) : (
+                  <Button
+                    variant="secondary"
+                    className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
+                  >
+                    {condition}
+                  </Button>
+                )}
                 {isEditing && (
                   <Button
                     variant="ghost"
                     size="sm"
                     className="absolute -top-1 -right-1 rounded-full p-0 w-4 h-4 bg-red-100 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center border border-red-200 hover:border-red-500 transition-colors duration-200"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveCondition(index);
-                    }}
+                    onClick={() => handleRemoveCondition(index)}
                   >
                     <Minus size={10} />
                   </Button>
                 )}
-              </Button>
+              </div>
             ))}
           </div>
           {isEditing && (
-            <div className=" m-1 mt-4 flex items-center">
+            <div className="m-1 mt-4 flex items-center">
               <Input
                 value={newCondition}
                 onChange={(e) => setNewCondition(e.target.value)}
                 placeholder="Add new condition"
                 className="flex-grow mr-2"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddCondition();
+                  }
+                }}
               />
-              <Button variant="default" size="sm" onClick={handleAddCondition} className="bg-black text-white hover:bg-gray-800">
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={handleAddCondition}
+                className="bg-black text-white hover:bg-gray-800"
+              >
                 <Plus size={16} className="mr-2" /> Add
               </Button>
             </div>
