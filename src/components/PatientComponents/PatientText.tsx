@@ -1389,7 +1389,9 @@ const PatientText: React.FC<PatientTextProps> = ({ text, verified, lgtm, onUpdat
 
   const handleEdit = () => {
     setIsEditing(true);
-    setEditedData({ ...jsonData, current_symptoms: jsonData.current_symptoms || '', current_medications: jsonData.current_medications || '', patient_risk_factors: jsonData.patient_risk_factors || '' });
+    console.log("json data ---- ",jsonData)
+    //setEditedData({ ...jsonData, current_symptoms: jsonData.current_symptoms || '', current_medications: jsonData.current_medications || '', patient_risk_factors: jsonData.patient_risk_factors || '' });
+    setEditedData({...jsonData})
   };
 
   const handleCancel = () => {
