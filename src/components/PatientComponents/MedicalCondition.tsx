@@ -15,14 +15,7 @@ interface MedicalConditionProps {
   onTextChange: (newText: string) => void;
 }
 
-const MedicalCondition: React.FC<MedicalConditionProps> = ({
-  condition,
-  verified,
-  lgtm,
-  onUpdate,
-  onReset,
-  onTextChange
-}) => {
+const MedicalCondition: React.FC<MedicalConditionProps> = ({ condition, verified, lgtm, onUpdate, onReset, onTextChange }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedConditions, setEditedConditions] = useState<string[]>([]);
   const [newCondition, setNewCondition] = useState('');
@@ -39,7 +32,9 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
     setEditedConditions(parseConditions(condition));
   }, [condition, parseConditions]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -49,12 +44,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
 
   const handleSave = () => {
     setIsEditing(false);
-    const trimmedConditions = editedConditions
-      .map(c => c.trim())
-      .filter(c => c !== '');
-    const uniqueConditions = Array.from(new Set(trimmedConditions));
-    onTextChange(`Medical Conditions: ${uniqueConditions.join(', ')}`);
-    setNewCondition('');
+    onTextChange(`Medical Conditions: ${editedConditions.join(', ')}`);
   };
 
   const handleThumbsUp = () => {
@@ -65,25 +55,32 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
     onUpdate(true, false);
   };
 
+  const cleanInput = (input: string): string => {
+    // Split the input by commas
+    const parts = input.split(',');
+    // Filter out empty parts and trim each part
+    const cleanParts = parts.map(part => part.trim()).filter(part => part !== '');
+    // Join the parts back with a comma and space
+    return cleanParts.join(', ');
+  };
+
   const handleAddCondition = () => {
-    const commaOnlyRegex = /^[\s,]*$/;
-    if ((newCondition.trim() !== '' && newCondition.trim() !== '') || !(commaOnlyRegex.test(newCondition.trim()))) {
-      setEditedConditions(prev => [...prev, newCondition.trim()]);
+    if (newCondition.trim() !== '') {
+      const cleanedInput = cleanInput(newCondition);
+      const newConditions = cleanedInput.split(', ');
+      setEditedConditions(prev => [...prev, ...newConditions]);
       setNewCondition('');
     }
   };
 
   const handleRemoveCondition = (index: number) => {
-    setEditedConditions(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleConditionChange = (index: number, value: string) => {
-    setEditedConditions(prev => prev.map((c, i) => i === index ? value : c));
+    const updatedConditions = editedConditions.filter((_, i) => i !== index);
+    setEditedConditions(updatedConditions);
   };
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+      <CardHeader className="flex flex-row items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Medical Condition</CardTitle>
         <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
           <StatusIndicator
@@ -104,21 +101,13 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
         <ScrollArea className="max-h-50 pr-4">
           <div className="flex flex-wrap gap-2 mt-2">
             {editedConditions.map((condition, index) => (
-              <div key={index} className="relative group">
-                {isEditing ? (
-                  <Input
-                    value={condition}
-                    onChange={(e) => handleConditionChange(index, e.target.value)}
-                    className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
-                  />
-                ) : (
+              <div key={index} className="relative group inline-flex">
                   <Button
-                    variant="secondary"
-                    className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
-                  >
-                    {condition}
-                  </Button>
-                )}
+                      variant="secondary"
+                      className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold flex items-center h-auto py-1 px-3 max-w-xs break-all" // Change break-words to break-all
+                    >
+                      {condition}
+                    </Button>
                 {isEditing && (
                   <Button
                     variant="ghost"
@@ -137,9 +126,9 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
               <Input
                 value={newCondition}
                 onChange={(e) => setNewCondition(e.target.value)}
-                placeholder="Add new condition"
+                placeholder="Add new condition(s)"
                 className="flex-grow mr-2"
-                onKeyPress={(e) => {
+                onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleAddCondition();
                   }

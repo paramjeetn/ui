@@ -57,10 +57,15 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
     setNewCondition('');
   };
 
+  const cleanInput = (input: string): string[] => {
+    const parts = input.split(',');
+    return parts.map(part => part.trim()).filter(part => part !== '');
+  };
+
   const handleAddCondition = () => {
-    const commaOnlyRegex = /^[\s,]*$/;
-    if (newCondition.trim() !== '' || !(commaOnlyRegex.test(newCondition.trim()))) {
-      setEditedConditions(prev => [...prev, newCondition.trim()]);
+    if (newCondition.trim() !== '') {
+      const newConditions = cleanInput(newCondition);
+      setEditedConditions(prev => [...prev, ...newConditions]);
       setNewCondition('');
     }
   };
@@ -75,7 +80,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row mb-6 items-center justify-between py-2">
+      <CardHeader className="flex flex-row items-center justify-between py-2">
         <CardTitle className="text-xl font-semibold">Medical Condition</CardTitle>
         <div className="flex items-center space-x-2 flex-grow mr-2 ml-2">
           <StatusIndicator
@@ -95,21 +100,13 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
         <ScrollArea className="max-h-50 pr-4">
           <div className="flex flex-wrap gap-2 mt-2">
             {editedConditions.map((condition, index) => (
-              <div key={index} className="relative group">
-                {isEditing ? (
-                  <Input
-                    value={condition}
-                    onChange={(e) => handleConditionChange(index, e.target.value)}
-                    className="rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
-                  />
-                ) : (
+              <div key={index} className="relative group inline-flex">
                   <Button
                     variant="secondary"
-                    className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold"
-                  >
+                    className="rounded-full m-1 bg-gray-100 text-gray-800 hover:bg-gray-200 font-bold flex items-center h-auto py-1 px-3 max-w-xs break-all" // Change break-words to break-all
+                    >
                     {condition}
-                  </Button>
-                )}
+                  </Button>                
                 {isEditing && (
                   <Button
                     variant="ghost"
@@ -128,7 +125,7 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
               <Input
                 value={newCondition}
                 onChange={(e) => setNewCondition(e.target.value)}
-                placeholder="Add new condition"
+                placeholder="Add new condition(s)"
                 className="flex-grow mr-2"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {

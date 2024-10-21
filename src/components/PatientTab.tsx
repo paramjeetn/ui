@@ -201,7 +201,6 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
       {patientData && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <section className="space-y-4">
-            <h2 className="text-xl font-bold">Patient Data</h2>
             <PatientText
               text={patientData.patient_data.patient_text}
               verified={patientData.patient_data.patient_text_verified}
@@ -213,7 +212,6 @@ const PatientTab: React.FC<PatientTabProps> = ({ selectedItem }) => {
             />
           </section>
           <section className="space-y-4">
-            <h2 className="text-xl font-bold">Medical Information</h2>
             <MedicalCondition
               condition={patientData.patient_data.medical_condition}
               verified={patientData.patient_data.medical_condition_verified}
