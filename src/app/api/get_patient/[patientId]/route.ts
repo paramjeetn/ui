@@ -1,5 +1,13 @@
 import { NextResponse } from 'next/server';
 
+
+type RouteContext = {
+  params: {
+    patientId: string;
+  };
+};
+
+
 export async function GET(request: Request, context:any) {
   const {params} = context;
   const patientId = params.patientId

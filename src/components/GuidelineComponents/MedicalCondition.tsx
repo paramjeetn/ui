@@ -74,9 +74,9 @@ const MedicalCondition: React.FC<MedicalConditionProps> = ({
     setEditedConditions(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleConditionChange = (index: number, value: string) => {
-    setEditedConditions(prev => prev.map((c, i) => i === index ? value : c));
-  };
+  // const handleConditionChange = (index: number, value: string) => {
+  //   setEditedConditions(prev => prev.map((c, i) => i === index ? value : c));
+  // };
 
   return (
     <Card className="mb-4">

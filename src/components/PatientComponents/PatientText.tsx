@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import StatusIndicator from '@/components/PatientComponents/StatusIndicator'; 
 import { Button } from "@/components/ui/button";
 import { Pencil, X, Check, User, Calendar, Activity, AlertTriangle, Pill, Droplet, Stethoscope, FileText, Plus, Minus } from "lucide-react";

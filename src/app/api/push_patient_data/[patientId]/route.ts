@@ -1,13 +1,38 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request, context: any) {
+// Define a type for the context parameter
+type RouteContext = {
+  params: {
+    patientId: string;
+  };
+};
+
+// Define an interface for the request body
+interface PatientData {
+  patient_name: string;
+  patient_text: string;
+  medical_condition: string;
+  final_recommendation: string;
+  retrieved_docs: any; // Consider defining a more specific type if possible
+  patient_text_verified: boolean;
+  medical_condition_verified: boolean;
+  final_recommendation_verified: boolean;
+  retrieved_docs_verified: boolean;
+  patient_text_lgtm: boolean;
+  medical_condition_lgtm: boolean;
+  final_recommendation_lgtm: boolean;
+  retrieved_docs_lgtm: boolean;
+  updated_by: string;
+}
+
+export async function POST(request: Request, context: RouteContext) {
   const { params } = context;
   const patientId = params.patientId;
 
   try {
     // Parse the incoming request body
-    const requestBody = await request.json();
-    // console.log(requestBody)
+    const requestBody: PatientData = await request.json();
+    
     // Construct the URL with the patient ID
     const url = `https://paramjeetpradhan00-copilot.cloud.dbos.dev/api/v1/push_patient_data/${patientId}`;
 
@@ -18,22 +43,7 @@ export async function POST(request: Request, context: any) {
         'Content-Type': 'application/json',
         // Add any other headers if needed
       },
-      body: JSON.stringify({
-        patient_name: requestBody.patient_name,
-        patient_text: requestBody.patient_text,
-        medical_condition: requestBody.medical_condition,
-        final_recommendation: requestBody.final_recommendation,
-        retrieved_docs: requestBody.retrieved_docs,
-        patient_text_verified: requestBody.patient_text_verified,
-        medical_condition_verified: requestBody.medical_condition_verified,
-        final_recommendation_verified: requestBody.final_recommendation_verified,
-        retrieved_docs_verified: requestBody.retrieved_docs_verified,
-        patient_text_lgtm: requestBody.patient_text_lgtm,
-        medical_condition_lgtm: requestBody.medical_condition_lgtm,
-        final_recommendation_lgtm: requestBody.final_recommendation_lgtm,
-        retrieved_docs_lgtm: requestBody.retrieved_docs_lgtm,
-        updated_by: requestBody.updated_by
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

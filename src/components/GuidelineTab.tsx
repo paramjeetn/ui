@@ -7,7 +7,7 @@ import GuidelinePDF from '@/components/GuidelineComponents/GuidelinePDF';
 import {GuidelineData, GuidelineTabProps, Notification} from '@/components/types'
 
 // Import or define the useDebounce hook here
-const useDebounce = (callback: Function, delay: number) => {
+const useDebounce = <T extends (...args: any[]) => void>(callback: T, delay: number) => {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   const debouncedCallback = useCallback((...args: any[]) => {
@@ -35,7 +35,7 @@ const GuidelineTab: React.FC<GuidelineTabProps> = ({ selectedItem }) => {
   const [guidelineData, setGuidelineData] = useState<GuidelineData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const [_isSaving, setIsSaving] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
 
   useEffect(() => {

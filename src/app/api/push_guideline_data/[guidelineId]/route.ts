@@ -1,12 +1,36 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request, context: any) {
+// Define a type for the context parameter
+type RouteContext = {
+  params: {
+    guidelineId: string;
+  };
+};
+
+// Define an interface for the request body
+interface GuidelineData {
+  guideline_name: string;
+  guideline_text: string;
+  guideline_medical_condition: string;
+  guideline_criteria: string;
+  guideline_pdf: string;
+  guideline_text_verified: boolean;
+  guideline_medical_condition_verified: boolean;
+  guideline_criteria_verified: boolean;
+  guideline_text_lgtm: boolean;
+  guideline_medical_condition_lgtm: boolean;
+  guideline_criteria_lgtm: boolean;
+  updated_by: string;
+}
+
+export async function POST(request: Request, context: RouteContext) {
   const { params } = context;
-  const guidelineId = params.guidelineId
+  const guidelineId = params.guidelineId;
 
   try {
     // Parse the incoming request body
-    const requestBody = await request.json();
+    const requestBody: GuidelineData = await request.json();
+    
     // Construct the URL with the guideline ID
     const url = `https://paramjeetpradhan00-copilot.cloud.dbos.dev/api/v1/push_guideline_data/${guidelineId}`;
 
@@ -17,20 +41,7 @@ export async function POST(request: Request, context: any) {
         'Content-Type': 'application/json',
         // Add any other headers if needed
       },
-      body: JSON.stringify({ 
-        guideline_name: requestBody.guideline_name,
-            guideline_text: requestBody.guideline_text,
-            guideline_medical_condition: requestBody.guideline_medical_condition,
-            guideline_criteria: requestBody.guideline_criteria,
-            guideline_pdf: requestBody.guideline_pdf,
-            guideline_text_verified: requestBody.guideline_text_verified,
-            guideline_medical_condition_verified: requestBody.guideline_medical_condition_verified,
-            guideline_criteria_verified: requestBody.guideline_criteria_verified,
-            guideline_text_lgtm: requestBody.guideline_text_lgtm,
-            guideline_medical_condition_lgtm: requestBody.guideline_medical_condition_lgtm,
-            guideline_criteria_lgtm: requestBody.guideline_criteria_lgtm,
-            updated_by : requestBody.updated_by,
-            }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

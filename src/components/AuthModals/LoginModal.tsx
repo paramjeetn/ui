@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -8,14 +8,16 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { auth } from '@/firebase' // Assume you have this set up
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { FirebaseError } from 'firebase/app';
+
 
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
-  onSwitchToRegister: () => void
+  // onSwitchToRegister: () => void
 }
 
-export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -28,11 +30,14 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
       await signInWithEmailAndPassword(auth, email, password);
       onClose();
       router.push("/dashboard");
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
