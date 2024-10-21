@@ -13,7 +13,7 @@ interface PatientData {
   patient_text: string;
   medical_condition: string;
   final_recommendation: string;
-  retrieved_docs: any; // Consider defining a more specific type if possible
+  retrieved_docs: string; // Consider defining a more specific type if possible
   patient_text_verified: boolean;
   medical_condition_verified: boolean;
   final_recommendation_verified: boolean;

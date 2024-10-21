@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { auth } from '@/firebase' // Assume you have this set up
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { FirebaseError } from 'firebase/app';
+
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -28,8 +30,12 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
       await createUserWithEmailAndPassword(auth, email, password);
       onClose();
       router.push("/dashboard");
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   };
 

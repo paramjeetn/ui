@@ -42,7 +42,7 @@ const Dashboard = () => {
   // Filter data based on the active tab and search query
   const filteredData = () => {
     const entries = activeTab === 'patients' ? data.patient : data.guideline;
-    return Object.entries(entries).filter(([_, value]) =>
+    return Object.entries(entries).filter(([value]) =>
       value.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };

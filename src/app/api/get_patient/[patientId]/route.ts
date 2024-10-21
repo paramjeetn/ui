@@ -8,7 +8,7 @@ type RouteContext = {
 };
 
 
-export async function GET(request: Request, context:any) {
+export async function GET(request: Request, context:RouteContext) {
   const {params} = context;
   const patientId = params.patientId
   const response = await fetch(`https://paramjeetpradhan00-copilot.cloud.dbos.dev/api/v1/patients/${patientId}`, {
